@@ -45,7 +45,7 @@ The VM boots from the project ISO and prints its IP at the login prompt.
 | 09 | Crypto | per-index byte-offset encoding | done |
 | 10 | Race (bonus) | `access()`/`open()` TOCTOU over network | done |
 | 11 | Injection (bonus) | Lua `io.popen` daemon injection | done |
-| 12 | Injection (bonus) | Perl CGI over HTTP | pending |
+| 12 | Injection (bonus) | Perl CGI injection (glob bypass of uppercasing) | done |
 | 13 | SUID (bonus) | `getuid()` check bypass | pending |
 | 14 | Reversing (bonus) | final token recovery | pending |
 
