@@ -43,7 +43,7 @@ The VM boots from the project ISO and prints its IP at the login prompt.
 | 07 | SUID / env | `LOGNAME` command injection | done |
 | 08 | Access control | symlink bypass of a substring filter | done |
 | 09 | Crypto | per-index byte-offset encoding | done |
-| 10 | Race (bonus) | `access()`/`open()` TOCTOU over network | pending |
+| 10 | Race (bonus) | `access()`/`open()` TOCTOU over network | done |
 | 11 | Injection (bonus) | Lua `os.execute` daemon | pending |
 | 12 | Injection (bonus) | Perl CGI over HTTP | pending |
 | 13 | SUID (bonus) | `getuid()` check bypass | pending |
