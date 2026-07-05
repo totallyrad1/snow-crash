@@ -37,7 +37,7 @@ The VM boots from the project ISO and prints its IP at the login prompt.
 | 01 | Password cracking | DES `crypt` hash in `/etc/passwd` | done |
 | 02 | Forensics | Recover password from a tcpdump capture | done |
 | 03 | SUID / PATH | `$PATH` hijack of a relative command call | done |
-| 04 | SUID / web | Perl CGI token script | pending |
+| 04 | SUID / web | Perl CGI command injection (backticks) | done |
 | 05 | Cron | Writable script run as flag via cron | pending |
 | 06 | Code injection | PHP `preg_replace /e` | pending |
 | 07 | SUID / env | `LOGNAME` command injection | pending |
