@@ -36,7 +36,7 @@ The VM boots from the project ISO and prints its IP at the login prompt.
 | 00 | Encoding | Caesar-cipher (ROT+11) decode of a flag-owned file | done |
 | 01 | Password cracking | DES `crypt` hash in `/etc/passwd` | done |
 | 02 | Forensics | Recover password from a tcpdump capture | done |
-| 03 | SUID / PATH | `$PATH` hijack of a relative command call | pending |
+| 03 | SUID / PATH | `$PATH` hijack of a relative command call | done |
 | 04 | SUID / web | Perl CGI token script | pending |
 | 05 | Cron | Writable script run as flag via cron | pending |
 | 06 | Code injection | PHP `preg_replace /e` | pending |
