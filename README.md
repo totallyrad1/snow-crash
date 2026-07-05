@@ -38,7 +38,7 @@ The VM boots from the project ISO and prints its IP at the login prompt.
 | 02 | Forensics | Recover password from a tcpdump capture | done |
 | 03 | SUID / PATH | `$PATH` hijack of a relative command call | done |
 | 04 | SUID / web | Perl CGI command injection (backticks) | done |
-| 05 | Cron | Writable script run as flag via cron | pending |
+| 05 | Cron | World-writable dir run by a flag05 cron job | done |
 | 06 | Code injection | PHP `preg_replace /e` | pending |
 | 07 | SUID / env | `LOGNAME` command injection | pending |
 | 08 | Access control | token file access bypass | pending |
