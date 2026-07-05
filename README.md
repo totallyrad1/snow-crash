@@ -39,7 +39,7 @@ The VM boots from the project ISO and prints its IP at the login prompt.
 | 03 | SUID / PATH | `$PATH` hijack of a relative command call | done |
 | 04 | SUID / web | Perl CGI command injection (backticks) | done |
 | 05 | Cron | World-writable dir run by a flag05 cron job | done |
-| 06 | Code injection | PHP `preg_replace /e` | pending |
+| 06 | Code injection | PHP `preg_replace /e` (backtick operator) | done |
 | 07 | SUID / env | `LOGNAME` command injection | pending |
 | 08 | Access control | token file access bypass | pending |
 | 09 | Crypto | per-index byte-offset encoding | pending |
