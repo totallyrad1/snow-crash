@@ -26,17 +26,24 @@ $ tshark -r level02.pcap -q -z follow,tcp,ascii,0
 ... wwwbugs login: level... Password: ...
 ```
 
-The interesting bytes are what the **client typed** (client -> server). Extract those
-payloads and reconstruct the keystrokes. Telnet echoes each character, and the typist
-made mistakes and used the **delete key (0x7f)**, so a naive `strings` gives the wrong
-answer - you must replay the backspaces:
+The interesting bytes are what the **client typed** (client -> server). Telnet echoes
+each character, and the typist made mistakes and used the **delete key (0x7f)**, so a
+naive `strings` gives the wrong answer - you must replay the backspaces.
+
+`reconstruct.py` does all of this **directly from the pcap** (pure Python, no tshark
+needed): it parses the Ethernet/IPv4/TCP records, finds the telnet server from the SYN,
+reassembles the client->server stream by sequence number, strips telnet IAC negotiation
+(including variable-length `IAC SB .. IAC SE` blocks), then replays the keystrokes:
 
 ```sh
-$ tshark -r level02.pcap -Y 'tcp.srcport==39247 && tcp.len>0' \
-         -T fields -e tcp.payload > c2s.hex
-$ ./reconstruct.py c2s.hex
+$ ./reconstruct.py level02.pcap
+line: 'levelX'
+line: 'ft_waNDReL0L'
 password: ft_waNDReL0L
 ```
+
+(It still accepts a legacy hex dump - `./reconstruct.py c2s.hex` where `c2s.hex` is
+`tshark -r level02.pcap -Y 'tcp.dstport==12121 && tcp.len>0' -T fields -e tcp.payload`.)
 
 The raw typed stream at the password prompt was:
 
