@@ -1,5 +1,8 @@
 # Subject PDF is a binary reference, not part of the deliverable (subject forbids binaries in resource folders)
 en.subject.pdf
+# Packet captures are ISO-provided binaries: the subject says download them during
+# evaluation, never commit them. Keep them out of the repo even if left in a resources dir.
+*.pcap
 # Windows "mark of the web" NTFS alternate-data-stream artifacts (WSL)
 *:Zone.Identifier
 *.Zone.Identifier

@@ -38,18 +38,23 @@ perl replays the `0x7f` Backspace keys and prints the last line typed (the passw
 
 ```sh
 $ ./extract_password.sh level02.pcap
-password: ft_waNDReL0L
+ft_waNDReL0L
 ```
 
-The core command:
+The whole thing is a 5-stage pipeline, one obvious tool per stage:
 
 ```sh
 tshark -r level02.pcap -d tcp.port==12121,telnet \
-       -Y 'tcp.dstport == 12121 && telnet.data' -T fields -e telnet.data \
-  | tr -d '\n' \
-  | perl -0777 -ne 's/\\r/\n/g; $pw=""; for(split/\n/){$pw=$_ if /\S/}
-                    1 while $pw =~ s/[^\x7f]\x7f//; print "$pw\n"'
+       -Y 'tcp.dstport==12121 && telnet.data' -T fields -e telnet.data \
+  | tr -d '\n'                        \  # glue the per-packet keystrokes together
+  | sed 's/\\r/\n/g'                  \  # Enter key (shown as \r) -> line break
+  | perl -pe '1 while s/[^\x7f]\x7f//'\  # replay each Backspace (0x7f)
+  | tail -1                              # the password is the last line typed
 ```
+
+> Note: the capture itself (`level02.pcap`) is **not** committed - it is an
+> ISO-provided binary. Download it during evaluation with
+> `scp -P 4242 level02@<VM>:~/level02.pcap .` and run the script on it.
 
 The raw typed stream at the password prompt was:
 

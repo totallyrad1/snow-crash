@@ -1,28 +1,21 @@
 #!/usr/bin/env bash
+# level02 - recover flag02's telnet password from level02.pcap (needs tshark).
 #
-# level02 - recover the telnet password from level02.pcap.
+# Telnet sends keystrokes in plaintext, so the password is in the capture. The only
+# twist is that the typist used the Backspace/Delete key (byte 0x7f), which we replay.
 #
-# Telnet sends every keystroke in plaintext, so the typed password is right there in
-# the capture. The only twist: the person used the Backspace/Delete key (byte 0x7f)
-# to fix typos, so we "replay" those deletes to get the final, corrected password.
+# The pipeline, one obvious step per stage:
+#   tshark : decode port 12121 as telnet, print the client's typed data (IAC removed)
+#   tr     : glue the per-packet keystrokes into one stream
+#   sed    : the Enter key (tshark writes it as \r) becomes a line break
+#   perl   : replay Backspace - delete every "character + 0x7f" pair
+#   tail   : the password is the last line typed
 #
 # Usage: ./extract_password.sh [level02.pcap]
 
-set -euo pipefail
-PCAP="${1:-level02.pcap}"
-
-# The telnet server runs on the non-standard port 12121, so we tell tshark to decode
-# that port as telnet with '-d tcp.port==12121,telnet'. The 'telnet.data' field is the
-# application data with telnet's own IAC negotiation already stripped out for us. We
-# keep only the client->server direction (tcp.dstport==12121) = exactly what was typed
-# (not the server's echo).
-tshark -r "$PCAP" -d tcp.port==12121,telnet \
-       -Y 'tcp.dstport == 12121 && telnet.data' \
-       -T fields -e telnet.data 2>/dev/null \
+tshark -r "${1:-level02.pcap}" -d tcp.port==12121,telnet \
+       -Y 'tcp.dstport==12121 && telnet.data' -T fields -e telnet.data 2>/dev/null \
   | tr -d '\n' \
-  | perl -0777 -ne '
-      s/\\r/\n/g; tr/\r/\n/;                 # tshark shows the Enter key as \r -> line break
-      $pw = ""; for (split /\n/) { $pw = $_ if /\S/ }   # the last line typed is the password
-      1 while $pw =~ s/[^\x7f]\x7f//;         # each Backspace (0x7f) erases the char before it
-      print "password: $pw\n";
-    '
+  | sed 's/\\r/\n/g' \
+  | perl -pe '1 while s/[^\x7f]\x7f//' \
+  | tail -1
