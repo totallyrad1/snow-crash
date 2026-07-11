@@ -47,7 +47,7 @@ The VM boots from the project ISO and prints its IP at the login prompt.
 | 11 | Injection (bonus) | Lua `io.popen` daemon injection | done |
 | 12 | Injection (bonus) | Perl CGI injection (glob bypass of uppercasing) | done |
 | 13 | SUID (bonus) | `getuid()` bypass via LD_PRELOAD on a copy | done |
-| 14 | Reversing (bonus) | static patch of getflag (bypass anti-tamper) | done |
+| 14 | Reversing (bonus) | gdb: edit eax past ptrace check + spoof getuid() | done |
 
 ## Credentials / tokens (proof)
 
