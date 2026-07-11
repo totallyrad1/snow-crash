@@ -30,20 +30,26 @@ The interesting bytes are what the **client typed** (client -> server). Telnet e
 each character, and the typist made mistakes and used the **delete key (0x7f)**, so a
 naive `strings` gives the wrong answer - you must replay the backspaces.
 
-`reconstruct.py` does all of this **directly from the pcap** (pure Python, no tshark
-needed): it parses the Ethernet/IPv4/TCP records, finds the telnet server from the SYN,
-reassembles the client->server stream by sequence number, strips telnet IAC negotiation
-(including variable-length `IAC SB .. IAC SE` blocks), then replays the keystrokes:
+`extract_password.sh` does exactly this with tshark. Because the server is on the
+non-standard port 12121, we tell tshark to decode that port as telnet (`-d`); its
+`telnet.data` field is the typed data with the protocol's IAC negotiation already
+stripped. We keep only the client->server direction (`tcp.dstport==12121`), then a tiny
+perl replays the `0x7f` Backspace keys and prints the last line typed (the password):
 
 ```sh
-$ ./reconstruct.py level02.pcap
-line: 'levelX'
-line: 'ft_waNDReL0L'
+$ ./extract_password.sh level02.pcap
 password: ft_waNDReL0L
 ```
 
-(It still accepts a legacy hex dump - `./reconstruct.py c2s.hex` where `c2s.hex` is
-`tshark -r level02.pcap -Y 'tcp.dstport==12121 && tcp.len>0' -T fields -e tcp.payload`.)
+The core command:
+
+```sh
+tshark -r level02.pcap -d tcp.port==12121,telnet \
+       -Y 'tcp.dstport == 12121 && telnet.data' -T fields -e telnet.data \
+  | tr -d '\n' \
+  | perl -0777 -ne 's/\\r/\n/g; $pw=""; for(split/\n/){$pw=$_ if /\S/}
+                    1 while $pw =~ s/[^\x7f]\x7f//; print "$pw\n"'
+```
 
 The raw typed stream at the password prompt was:
 
